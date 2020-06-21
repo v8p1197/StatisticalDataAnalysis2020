@@ -1,5 +1,5 @@
 library(readxl)
-library(sdautils)
+library(SDAutils)
 
 data <- read_excel("Data/dataset_airline.xlsx")
 data <- data[!(is.na(data$recommended) | data$recommended==""), ]
