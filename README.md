@@ -1,2 +1,4 @@
 # StatisticalDataAnalysis2020
-Run packages.R first, then script.R
+To correctly use the script:
+1) Run packages.R
+2) Run script.R
