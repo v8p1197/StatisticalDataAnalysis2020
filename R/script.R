@@ -1,7 +1,14 @@
-# Title     : TODO
-# Objective : TODO
-# Created by: v9pet
-# Created on: 19/06/2020
+library(readxl)
+library(sdautils)
 
-print("Hello SDA@R")
-plot(1:20, pch=1:20, col=sample(255, 20, replace=T))
+data <- read_excel("R/Data/capstone_airline_reviews3.xlsx")
+data <- data[!(is.na(data$recommended) | data$recommended==""), ]
+
+View(data)
+dim(data)
+
+data2 <- data[rowSums(is.na(data)) > 0, ]
+
+View(na.omit.unique(data$traveller_type))
+
+View(na.omit.unique(data$cabin))
