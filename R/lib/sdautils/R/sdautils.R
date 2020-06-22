@@ -1,3 +1,7 @@
+.onLoad <- function(libname, pkgname) {
+  backports::import(pkgname, "hasName", force=TRUE)
+}
+
 #'
 #' Removes NA from a feature
 #'
@@ -7,7 +11,7 @@
 #' @usage na.omit.unique(feature)
 #' @export
 na.omit.unique <- function(feature) {
-  return (na.omit(unique(feature)))
+  return (unique(na.omit(feature)))
 }
 
 #'

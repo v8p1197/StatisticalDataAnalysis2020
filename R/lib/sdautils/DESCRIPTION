@@ -5,6 +5,8 @@ Version: 0.1.0
 Authors: Giovanni Ammendola, Vincenzo Petrone, Andrea Valitutto, Salvatore Ventre
 Maintainer: <v.petrone6@studenti.unisa.it>
 Description: A list of utiliy functions for SDA 2020 project
+Imports:
+    backports
 License: UniSa
 Encoding: UTF-8
 LazyData: true
