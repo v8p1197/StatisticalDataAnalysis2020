@@ -9,3 +9,10 @@
 na.omit.unique <- function(feature) {
   return (na.omit(unique(feature)))
 }
+
+#'
+#'
+rename <- function(data, name.old, name.new) {
+  names(data)[names(data) == name.old] <- name.new
+  return (data)
+}
