@@ -10,8 +10,10 @@ data2 <- read_csv("Data/dataset_airline2.csv")
 data_no_content = data[,-c(3,4,5,6,9,10)]
 data_no_content = replace.value(data_no_content, "recommended", from='yes', to=as.integer(1), verbose=T)
 data_no_content = replace.value(data_no_content, "recommended", from='no', to=as.integer(0), verbose=T)
+write.csv(data_no_content, file = "preprocessed.csv")
 
-write.csv(data_no_content, file = "temp.csv")
+data2_no_content = data2[,-c(2,3,4,5,6,7,8,11)]
+write.csv(data2_no_content, file = "preprocessed2.csv")
 
 View(data)
 dim(data)
