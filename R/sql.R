@@ -1,7 +1,6 @@
-install.packages("RSQLite")
 library(RSQLite)
 
-conn <- dbConnect(SQLite(),'mycars.db')
+conn <- dbConnect(SQLite(),'mer.db')
 
 dbGetQuery(conn, 'DROP TABLE IF EXISTS mer')
 

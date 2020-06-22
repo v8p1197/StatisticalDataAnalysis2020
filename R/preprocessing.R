@@ -53,6 +53,7 @@ d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%dnd %B %Y")
 d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%drd %B %Y")
 d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%dth %B %Y")
 data$review_date = d
+rm(d)
 
 # Remove useless columns from dataset 1
 data = data[,-10]
@@ -64,6 +65,7 @@ data2 = data2[,-c(2,3,5)]
 # Move columns
 order = colnames(data2)
 data = data[,order]
+rm(order)
 
 # Merge datasets
 mer = merge(data, data2, all=T)
