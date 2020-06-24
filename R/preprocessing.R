@@ -2,6 +2,7 @@ library(readxl)
 library(SDAutils)
 library(readr)
 library(anchors)
+library(mice)
 
 ## Data Loading
 # Load dataset 1
@@ -53,6 +54,7 @@ d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%dnd %B %Y")
 d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%drd %B %Y")
 d[is.na(d)] <- as.Date(data$review_date[is.na(d)], format="%dth %B %Y")
 data$review_date = d
+rm(d)
 
 # Remove useless columns from dataset 1
 data = data[,-10]
@@ -64,6 +66,7 @@ data2 = data2[,-c(2,3,5)]
 # Move columns
 order = colnames(data2)
 data = data[,order]
+rm(order)
 
 # Merge datasets
 mer = merge(data, data2, all=T)
@@ -86,6 +89,15 @@ mer = mer[,-c(2,3,4,5,8)]
 #convert recommended character into numerica data
 mer$recommended = as.numeric(as.character(mer$recommended))
 
+#Replace 0 in NA values
+merReplace = replace.value(mer, c('seat_comfort','cabin_service','food_bev',
+                          'entertainment','ground_service','value_for_money'), from=0, to=NA, verbose = TRUE)
+
+#Replace the missing Data into samples using pmm method
+merComplete <- complete(mice(data = merReplace, m=1, method = 'pmm'))
+
 ## Output preprocessed datasets
 write.csv(mer, file = "Data/preprocessed.csv")
+# Output preprocessed complete dataset
+write.csv(merComplete, file = "Data/preprocessed_complete.csv")
 
