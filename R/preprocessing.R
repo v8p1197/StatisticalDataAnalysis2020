@@ -83,5 +83,9 @@ mer = mer[!duplicated(mer), ]
 # Remove useless columns from merged dataset
 mer = mer[,-c(2,3,4,5,8)]
 
+#convert recommended character into numerica data
+mer$recommended = as.numeric(as.character(mer$recommended))
+
 ## Output preprocessed datasets
 write.csv(mer, file = "Data/preprocessed.csv")
+
