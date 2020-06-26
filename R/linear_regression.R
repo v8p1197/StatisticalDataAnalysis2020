@@ -71,6 +71,17 @@ par(mfrow=c(2,2))
 plot(fit4)
 anova(fit3,fit4)
 
+# DA RIVEDERE CON PETRONE
+fit5 <- lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
+           +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
+           +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete)
+
+summary(fit5)
+anova(fit3,fit5)
+dev.new()
+par(mfrow=c(2,2))
+plot(fit5)
+
 # The best transformation is polinomials-3, non-linear transformation 
 
 
