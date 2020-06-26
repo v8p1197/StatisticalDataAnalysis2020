@@ -31,8 +31,7 @@ dev.new()
 par(mfrow=c(2,2))
 plot(fit)
 
-
-# The trend is not linear, so we fit polinomials-2 non-linear transformation.
+# The trend is not linear, so we fit polinomials-2 no-linear transformation.
 fit2 <- lm(overall~recommended+cabin_service+ground_service+seat_comfort+wifi_connectivity
            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
            +I(cabin_service^2)+I(ground_service^2)+I(value_for_money^2),data = merComplete)
@@ -45,8 +44,7 @@ plot(fit2)
 # Compare the previous model "fit" with model "fit2"
 anova(fit,fit2)
 
-
-# Fit polinomials-3, non-linear transformation
+# Fit polinomials-3, no-linear transformation
 fit3 <- lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
            +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
           +poly(wifi_connectivity,3)+poly(value_for_money,3), data = merComplete)
@@ -57,7 +55,6 @@ dev.new()
 par(mfrow=c(2,2))
 plot(fit3)
 anova(fit2,fit3)
-
 
 # Fit log transformation
 fit4 <- lm(overall~recommended+log(seat_comfort)+log(cabin_service)
@@ -71,7 +68,7 @@ par(mfrow=c(2,2))
 plot(fit4)
 anova(fit3,fit4)
 
-# DA RIVEDERE CON PETRONE
+# Polinomials-4 no-linear transformation
 fit5 <- lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
            +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
            +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete)
@@ -82,7 +79,7 @@ dev.new()
 par(mfrow=c(2,2))
 plot(fit5)
 
-# The best transformation is polinomials-3, non-linear transformation 
+# The best transformation is polinomials-3 ?, non-linear transformation
 
 
 

@@ -73,10 +73,12 @@ cv.error
 ########## Bootstrap ##########
 
 # The boot.fn() function can also be used in order to create bootstrap estimates 
-# for the intercept and slope terms by randomly sampling from among the 
-# observations with replacement
-set.seed (10)
+# for the intercept and slope terms by randomly sampling from among the observations with replacement
+# We will compare the estimates obtained using the bootstrap to those obtained using the previous models
+library(stringr)
+
 # No-transformation
+set.seed (10)
 boot.fn=function(data,index){
   return(coef(lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
                  +wifi_connectivity+value_for_money, data = merComplete,subset=index)))
@@ -84,7 +86,6 @@ boot.fn=function(data,index){
 boot.fn(merComplete, 1:n)
 
 
-boot.fn(merComplete,sample(1:n, 79576,replace=T))
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 # We use the boot() function to compute the standard errors 
@@ -103,9 +104,11 @@ se <- as.numeric(unlist(str_extract_all(x, '[0-9.]+$')))
 # Take all std. errors of the linear model
 c = s$coefficients[ ,2]
 c = as.numeric(c)
-c -se
 
-##################
+cat("\nDifference between no-Transformation Std.errors:\n",c - se,"\n")
+
+
+# Polinomials-2 no-linear transformation
 set.seed (11)
 
 boot.fn=function(data,index){
@@ -115,7 +118,6 @@ boot.fn=function(data,index){
 }
 boot.fn(merComplete, 1:n)
 
-boot.fn(merComplete,sample(1:n, 79576,replace=T))
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 # We use the boot() function to compute the standard errors 
@@ -133,11 +135,13 @@ x <- str_extract(x, "^t[0-9.]+.*$")
 x <- x[!is.na(x)]
 se <- as.numeric(unlist(str_extract_all(x, '[0-9.]+$')))
 
-# Take all std. errors of the linear model
+# Take all std. errors of the poly-2 transformation
 c = s$coefficients[ ,2]
 c = as.numeric(c)
-c - se
-############################
+
+cat("\nDifference between poly-2 transformation Std.errors:\n",c - se,"\n")
+
+# Polinomials-3 no-linear transformation
 set.seed (12)
 
 boot.fn=function(data,index){
@@ -149,7 +153,6 @@ boot.fn=function(data,index){
 boot.fn(merComplete, 1:n)
 
 
-boot.fn(merComplete,sample(1:n, 79576,replace=T))
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 b = boot(merComplete ,boot.fn ,1000)
@@ -164,12 +167,13 @@ x <- str_extract(x, "^t[0-9.]+.*$")
 x <- x[!is.na(x)]
 se <- as.numeric(unlist(str_extract_all(x, '[0-9.]+$')))
 
-# Take all std. errors of the linear model
+# Take all std. errors of the poly-3 transformation
 c = s$coefficients[ ,2]
 c = as.numeric(c)
-c -se
 
-###############################
+cat("\nDifference between poly-3 transformation Std.errors:\n",c - se,"\n")
+
+# Polinomials-4 no-linear transformation
 set.seed (13)
 
 boot.fn=function(data,index){
@@ -181,7 +185,6 @@ boot.fn=function(data,index){
 boot.fn(merComplete, 1:n)
 
 
-boot.fn(merComplete,sample(1:n, 79576,replace=T))
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 boot(merComplete ,boot.fn ,1000)
@@ -196,10 +199,11 @@ x <- str_extract(x, "^t[0-9.]+.*$")
 x <- x[!is.na(x)]
 se <- as.numeric(unlist(str_extract_all(x, '[0-9.]+$')))
 
-# Take all std. errors of the linear model
+# Take all std. errors of the poly-4 transformation
 c = s$coefficients[ ,2]
 c = as.numeric(c)
-c -se
+
+cat("\nDifference between poly-4 transformation Std.errors:\n",c - se,"\n")
 
 
 ######## Plot ########
@@ -211,8 +215,6 @@ plot(as.factor(seat_comfort),overall)
 xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~seat_comfort,data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
 matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
-matplot(xx,ci_lin$fit[,2],lty=3,col="red", type="l", add=T)
-matplot(xx,ci_lin$fit[,3],lty=3,col="red", type="l", add=T)
 
 ## Plot linear model with polinomials-2 transformation
 dev.new()
@@ -222,7 +224,7 @@ xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~I(seat_comfort^2),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
 matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
-
+## Plot linear model with polinomials-3 transformation
 dev.new()
 plot(as.factor(seat_comfort),overall)
 #abline(lm(overall~I(seat_comfort^2), data = merComplete),col="blue")

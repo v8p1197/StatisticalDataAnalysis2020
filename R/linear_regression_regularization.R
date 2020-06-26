@@ -1,3 +1,4 @@
+# Linear regression - multiple regressor, with regularization 
 ###### REGULARIZATION #######
 
 library(glmnet)
@@ -8,29 +9,36 @@ x = model.matrix(overall~recommended+seat_comfort+cabin_service+food_bev+enterta
 y = merComplete$overall
  
 # The model.matrix() function is particularly useful for creating x; not only does it produce a matrix 
-# corresponding to the 8 predictors but it also automatically transforms any qualitative variables into dummy variables (recommended).
+# corresponding to the 8 predictors but it also automatically transforms any qualitative
+# variables into dummy variables (recommended).
 # The latter property is important because glmnet() can only take numerical, quantitative inputs.
 
+########################
 ######### Ridge ########
 
-grid=10^seq(10,-2,length=100) # Griglia di valori per lambda (tra 10^10 a 10^-2)
-ridge.mod=glmnet(x,y,alpha=0,lambda=grid) # glmnet vuole la matrice dei regressori, la variabile dipendente e vuole che 
-# si specifichi la tecnica da utilizzare aplha = 0 (ridge regression), alpha = 1 (lasso)
+grid=10^seq(10,-2,length=100) # Lambda values grid (from 10^10 to 10^-2)
+
+# Inputs of glmnet: regressors matrix, dependent variable and alpha value:
+# alpha = 0 (ridge regression), alpha = 1 (lasso)
+ridge.mod=glmnet(x,y,alpha=0,lambda=grid) 
 
 
-dim(coef(ridge.mod)) # 9 coefficienti e 100 valori di lambda
+dim(coef(ridge.mod)) # 9 coefficients, 100 lambda values
 
 # We expect the coefficient estimates to be much smaller, in terms of l2 norm, when a large value of lambda is used, as
-# compared to when a small value is used. 
-ridge.mod$lambda[50] # grid[50] = 11497.57
+# compared to when a small value is used.
+# grid[50]
+ridge.mod$lambda[50] # lambda = 11497.57
 coef(ridge.mod)[,50] # corresponding coefficients
 sqrt(sum(coef(ridge.mod)[-1,50]^2)) # l2 norm
+
+# grid[60]
 ridge.mod$lambda[60] # lambda = 705.48
 coef(ridge.mod)[,60] # corresponding coefficients
-# Al diminuire di lambda aumentano i coefficienti e all'aumentare di lambda diminuiscono i coefficienti
-sqrt(sum(coef(ridge.mod)[-1,60]^2)) # l2 norm > l2 for lambda[50]
+sqrt(sum(coef(ridge.mod)[-1,60]^2)) # l2 norm for lambda[60] > l2 for lambda[50]
+# As lambda decreases -> the coefficients increase. As lambda increases -> the coefficients decrease
 
-predict(ridge.mod,s=50,type="coefficients")[1:9,] # s = valore di lambda, predict of the coefficients
+predict(ridge.mod,s=50,type="coefficients")[1:9,] # s = lambda value, predict of the coefficients
 
 # Validation approach to estimate test error
 set.seed(2017)
@@ -38,92 +46,99 @@ train=sample(1:nrow(x), nrow(x)/2) # another typical approach to sample
 test=(-train)
 y.test=y[test]
 
-# fit a ridge regression model on the training set, and evaluate its MSE on the test set, using lambda = 4. 
+# Fit a ridge regression model on the training set, and evaluate its MSE on the test set, using lambda (s) = 4. 
 ridge.mod=glmnet(x[train,],y[train],alpha=0,lambda=grid,thresh=1e-12)
 ridge.pred=predict(ridge.mod,s=4,newx=x[test,]) # Note the use of the predict() function for a test set
 
-mean((ridge.pred-y.test)^2) # test MSE
+mean((ridge.pred-y.test)^2) # test MSE = 1.65811
 
 # test MSE, è mse di test con un modello che usa il valore medio delle y del training set, praticamente il modello con la
 # la sola intercetta, cioè tutti gli altri coefficienti = 0. Capire la capacità predittiva di un modello banale, 
 # infatti il mse test è motlo più grande rispetto a quello calcolato precedentemente.
 
-mean((mean(y[train ])-y.test)^2) # DA RIVEDDERE 
+mean((mean(y[train ])-y.test)^2) # DA RIVEDERE ? mse = 11.8642
 
-# predizione con lambda --> +OO cioè significa tutti i coefficienti prossimi a zero, infatti si trova più o meno con lambda = 10^10
-
+# Two predictions with different (arbitrary) values of lambda: 
+# lambda --> +OO (10^10) means coefficients close to zero
 ridge.pred=predict(ridge.mod,s=1e10,newx=x[test,])
 mean((ridge.pred-y.test)^2) # like intercept only
 
-# Least squares is simply ridge regression with lambda=0, stesso risultato che ho ottenuto con lm(), exact rifà i calcoli del modello,
-# non utilizza un modello gia noto
+# lambda --> 0 means that Least squares is simply ridge regression.
 ridge.pred=predict(ridge.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
 mean((ridge.pred-y.test)^2)
+# Same result obtained with lm(), exact = T works again on the model (but not the known model)
 
-# Comapre the results from glmnet when lambda=0 with lm(). Nel nostro caso la ridge regression da risultati peggiori rispetto a mse
+# Comparation of the results between lm() and glmnet when lambda=0:
 lm(y~x, subset=train)
-predict(ridge.mod,s=0,exact=T,type="coefficients",x=x[train,],y=y[train])[1:9,] # corrected according to errata 
+predict(ridge.mod,s=0,exact=T,type="coefficients",x=x[train,],y=y[train])[1:9,]
+#In our case, best results are obtained with MSE compared to Ridge Regression
 
 
-# per ora abbiamo dato dei valori arbitrari a lambda, ora utilizziamo dei metodi per stimare lambda (cross validation)
+#Instead of arbitrary values, we now use method "Cross validation" to estimate lambda:
 set.seed (2016)
-cv.out=cv.glmnet(x[train,],y[train],alpha=0) #cross validation
+cv.out=cv.glmnet(x[train,],y[train],alpha=0)
 dev.new()
+
 # gradi di libertà = quali sono i coefficienti diversi da zero, le righe in verticale sono il range di valori che si puo 
 # scegliere per lambda senza cambiare la predittività del nostro modello
 
 plot(cv.out)
-bestlam=cv.out$lambda.min; bestlam;log(bestlam) # the best lambda 
+bestlam=cv.out$lambda.min
+bestlam # the best lambda 
+log(bestlam) # log value of previous lambda 
 
-#cv.out$lambda.1se
-# Predizione del modello con la miglior lambda
+# Prediction of the model with the best value of lambda
 ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
-mean((ridge.pred-y.test)^2)
+mean((ridge.pred-y.test)^2) # MSE = 1.153201
 
-
+# Prediction of the coefficients with the best value of lambda
 out=glmnet(x,y,alpha=0)
 predict(out,type="coefficients",s=bestlam)[1:9,]
-# As expected, none of the coefficients are zero
+# As expected, none of the coefficients is zero
 
-# Come variano i coefficienti al variare di lambda
+# Figure that show the variation of the coefficients with different values of lambda
 dev.new()
 plot(out,label = T, xvar = "lambda")
 
+
+#####################
 ####### LASSO #######
 
-# use the argument alpha = 1 to perform lasso
+# Use the argument alpha = 1 to perform Lasso
 lasso.mod = glmnet(x[train,], y[train], alpha=1, lambda=grid)
 dev.new()
 plot(lasso.mod,label = T) # L1 norm
-dev.new()
-plot(lasso.mod,label = T, xvar = "lambda") # In funzione di lamda
 
-# perform cross-validation for estimate the best labda to minimize mse test
+# Figure that show the variation of the coefficients with different values of lambda
+dev.new()
+plot(lasso.mod,label = T, xvar = "lambda")
+
+# Perform Cross-Validation for estimate the best lambda to minimize "mse test"
 set.seed (1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=1)
 dev.new()
 plot(cv.out)
-bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam))
-print(cv.out$lambda.1se)
+bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda
+print(cv.out$lambda.1se) ## ?
+
 lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
 mean((lasso.pred-y.test)^2) # slighly larger than ridge
-# wrt lm
+
+# Comparation between lm() and lasso-model with lambda = 0
 lasso.pred=predict(lasso.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
 mean((lasso.pred-y.test)^2)
+
 # However, the lasso has a substantial advantage:
-# 8 of the 19 coefficient estimates are exactly zero (12 on the text).
+# 1 of the 8 coefficient estimates is exactly zero: wifi_connectivity
 out=glmnet(x,y,alpha=1,lambda=grid)
 lasso.coef=predict(out,type="coefficients",s=bestlam)[1:9,]
 lasso.coef
 lasso.coef[lasso.coef!=0]
 cat("Number of coefficients equal to 0:",sum(lasso.coef==0),"\n")
 
-# compare with OLS when only selected predictors are included. 
-#fit.lm=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-#                         +value_for_money, data=merComplete) # 1 coeff = 0
+# Compare with OLS when only selected predictors are included. 
+# fit.lm=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
+#                         +value_for_money, data=merComplete) # 1 coeff = 0 (wifi_connectivity)
 fit.lm=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
           +value_for_money, data=merComplete)
 coef(fit.lm)
-# lasso.coef=predict(out,type="coefficients",s=0)[1:20,]
-# lasso.coef
-# coef(lm(Salary~., data=Hitters)) # differences on the 3rd place
