@@ -4,7 +4,7 @@
 library(glmnet)
 attach(merComplete)
 x = model.matrix(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                 +wifi_connectivity+value_for_money, merComplete)[,-1] # without 1's Non vuole l'intercetta
+                 +wifi_connectivity+value_for_money, merComplete)[,-1] #[-1] means no intercept
 
 y = merComplete$overall
  

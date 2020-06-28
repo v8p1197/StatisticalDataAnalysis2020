@@ -12,7 +12,7 @@ n = nrow(merComplete)
 
 ######### Validation Set Approch #########
 
-set.seed (1)
+set.seed(110)
 train=sample(1:n,n/2) ###
 lm.fit=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
           +wifi_connectivity+value_for_money, data = merComplete, subset = train)
@@ -21,9 +21,9 @@ lm.fit=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+
 mean(((overall-predict(lm.fit,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-2 transformation.
-lm.fit2=lm(overall~recommended+cabin_service+ground_service+seat_comfort+wifi_connectivity
+lm.fit2=lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-           +I(cabin_service^2)+I(ground_service^2)+I(value_for_money^2),data = merComplete, subset=train)
+           +I(cabin_service^2)+I(value_for_money^2),data = merComplete, subset=train)
 
 # the estimated test MSE for the linear regression fit is 1.111269 (seed=2020)
 mean(((overall-predict(lm.fit2,merComplete))[-train])^2)
@@ -54,11 +54,10 @@ glm.fit=glm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainmen
             +wifi_connectivity+value_for_money ,data=merComplete)
 
 cv.err=cv.glm(merComplete,glm.fit, K = 8)
-cv.err$delta # The K-Fold Cross validation estimate for the test error is approximately 1.120650.
+cv.err$delta # The K-Fold Cross validation estimate for the test error is approximately 1.120650 (seed=110).
 
 # K-Fold Cross validation for polynomial regressions with orders i=1,2,...,4.
 
-## CHIEDERE A PETRONE IL GRADO 4 
 cv.error=rep(0,4)
 for (i in 1:4){
   glm.fit=glm(overall~recommended+poly(seat_comfort,i)+poly(cabin_service,i)
@@ -112,9 +111,9 @@ cat("\nDifference between no-Transformation Std.errors:\n",c - se,"\n")
 set.seed (11)
 
 boot.fn=function(data,index){
-  return(coef(lm(overall~recommended+cabin_service+ground_service+seat_comfort+wifi_connectivity
+  return(coef(lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
                  +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                 +I(cabin_service^2)+I(ground_service^2)+I(value_for_money^2),data = merComplete,subset=index)))
+                 +I(cabin_service^2)+I(value_for_money^2),data = merComplete,subset=index)))
 }
 boot.fn(merComplete, 1:n)
 
@@ -125,9 +124,9 @@ boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 b = boot(merComplete ,boot.fn ,1000)
 
-s = summary(lm(overall~recommended+cabin_service+ground_service+seat_comfort+wifi_connectivity
-           +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-           +I(cabin_service^2)+I(ground_service^2)+I(value_for_money^2),data = merComplete))
+s = summary(lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
+               +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
+               +I(cabin_service^2)+I(value_for_money^2),data = merComplete))
 
 # Take all std. errors of the bootstrap estimate 
 x <- capture.output(b)

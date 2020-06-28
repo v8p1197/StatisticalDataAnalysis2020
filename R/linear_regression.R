@@ -32,9 +32,9 @@ par(mfrow=c(2,2))
 plot(fit)
 
 # The trend is not linear, so we fit polinomials-2 no-linear transformation.
-fit2 <- lm(overall~recommended+cabin_service+ground_service+seat_comfort+wifi_connectivity
+fit2 <- lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-           +I(cabin_service^2)+I(ground_service^2)+I(value_for_money^2),data = merComplete)
+           +I(cabin_service^2)+I(value_for_money^2),data = merComplete)
 
 summary(fit2)
 confint(fit2)
@@ -58,8 +58,7 @@ anova(fit2,fit3)
 
 # Fit log transformation
 fit4 <- lm(overall~recommended+log(seat_comfort)+log(cabin_service)
-           +log(food_bev)+log(entertainment)+log(ground_service)
-           +log(wifi_connectivity)+log(value_for_money), data = merComplete)
+           +log(food_bev)+log(entertainment)+log(ground_service)+log(value_for_money), data = merComplete)
 
 summary(fit4)
 confint(fit4)
