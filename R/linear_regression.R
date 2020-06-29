@@ -6,6 +6,7 @@ attach(merComplete)
 dev.new()
 
 # Check Trend between overall and regressors
+
 par(mfrow=c(3,2))
 plot(seat_comfort, overall); plot(as.factor(seat_comfort), overall)
 plot(cabin_service, overall); plot(as.factor(cabin_service), overall)
