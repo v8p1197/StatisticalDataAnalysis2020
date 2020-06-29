@@ -17,7 +17,7 @@ train=sample(1:n,n/2) ###
 lm.fit=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
           +wifi_connectivity+value_for_money, data = merComplete, subset = train)
 
-# the estimated test MSE for the linear regression fit is 1.111269 (seed=2020)
+# the estimated test MSE for the linear regression fit is 1.111269 (seed=1)
 mean(((overall-predict(lm.fit,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-2 transformation.
@@ -25,7 +25,7 @@ lm.fit2=lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
            +I(cabin_service^2)+I(value_for_money^2),data = merComplete, subset=train)
 
-# the estimated test MSE for the linear regression fit is 1.111269 (seed=2020)
+# the estimated test MSE for the linear regression fit is 1.111269 (seed=1)
 mean(((overall-predict(lm.fit2,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-3 transformation.
@@ -33,7 +33,7 @@ lm.fit3=lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
            +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
            +poly(wifi_connectivity,3)+poly(value_for_money,3), data = merComplete, subset=train) 
 
-# the estimated test MSE for the linear regression fit is 1.096712 (seed=2020)
+# the estimated test MSE for the linear regression fit is 1.096712 (seed=1)
 mean(((overall-predict(lm.fit3,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-3 transformation.
@@ -41,7 +41,7 @@ lm.fit4=lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
            +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
            +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete, subset=train) 
 
-# the estimated test MSE for the linear regression fit is 1.093318 (seed=2020)
+# the estimated test MSE for the linear regression fit is 1.093318 (seed=1)
 mean(((overall-predict(lm.fit4,merComplete))[-train])^2)
 
 ## Changing the seed, the results remain consistent with our previous findings
@@ -80,7 +80,7 @@ library(stringr)
 set.seed (10)
 boot.fn=function(data,index){
   return(coef(lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                 +wifi_connectivity+value_for_money, data = merComplete,subset=index)))
+                 +wifi_connectivity+value_for_money, data = data,subset=index)))
 }
 boot.fn(merComplete, 1:n)
 
@@ -113,7 +113,7 @@ set.seed (11)
 boot.fn=function(data,index){
   return(coef(lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
                  +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                 +I(cabin_service^2)+I(value_for_money^2),data = merComplete,subset=index)))
+                 +I(cabin_service^2)+I(value_for_money^2),data = data,subset=index)))
 }
 boot.fn(merComplete, 1:n)
 
@@ -146,7 +146,7 @@ set.seed (12)
 boot.fn=function(data,index){
   return(coef(lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
                  +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-                 +poly(wifi_connectivity,3)+poly(value_for_money,3), data = merComplete,subset=index)))
+                 +poly(wifi_connectivity,3)+poly(value_for_money,3), data = data, subset=index)))
 }
 
 boot.fn(merComplete, 1:n)
@@ -178,7 +178,7 @@ set.seed (13)
 boot.fn=function(data,index){
   return(coef(lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
                  +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
-                 +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete,subset=index)))
+                 +poly(wifi_connectivity,4)+poly(value_for_money,4), data = data,subset=index)))
 }
 
 boot.fn(merComplete, 1:n)
