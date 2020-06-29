@@ -76,7 +76,4 @@ dev.new()
 par(mfrow=c(2,2))
 plot(fit4)
 
-# The best transformation is polinomials-3 ?, non-linear transformation
-
-
-
+# The best transformation is polinomials-4, non-linear transformation
