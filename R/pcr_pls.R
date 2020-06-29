@@ -8,9 +8,7 @@ set.seed (2)
 # Use the pcr() function:
 # Setting scale=TRUE has the effect of standardizing each predictor (scale projection)
 # Setting validation = 'CV' has the effect to use cross validation to rate M parameter
-pcr.fit=pcr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-            +I(cabin_service^2)+I(value_for_money^2),data = merComplete ,scale=TRUE, validation ="CV")
+pcr.fit=pcr(fit.poly2,data = merComplete ,scale=TRUE, validation ="CV")
 
 #Data: 	X dimension: [11] 79576  
 #       Y dimension: [1]  79576
@@ -23,7 +21,7 @@ pcr.fit=pcr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
 
 # Variance:
 #   - explained: 100% when there are all regressors
-#   - overall: 90.54%
+#   - overall: 90.68%
 
 summary(pcr.fit)
 # Note that pcr() reports the root mean squared error; 
@@ -38,19 +36,15 @@ which.min(MSEP(pcr.fit)$val[1,,][-1])
 # This suggests that there is no benefit in terms of reduction of dimensionality (M = 11)
 
 # Now perform PCR on the training data and evaluate its test set performance:
-set.seed (3)
-x = model.matrix(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-                 +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                 +I(cabin_service^2)+I(value_for_money^2),data = merComplete)[,-1]
+set.seed (1)
+x = model.matrix(fit.poly2,data = merComplete)[,-1]
 
 y = merComplete$overall
 train=sample(1:nrow(x), nrow(x)/2) # another typical approach to sample
 test=(-train)
 y.test=y[test]
 
-pcr.fit=pcr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-            +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-            +I(cabin_service^2)+I(value_for_money^2),data = merComplete ,subset=train,scale=TRUE,
+pcr.fit=pcr(fit.poly2,data = merComplete ,subset=train,scale=TRUE,
             validation ="CV")
 dev.new()
 # Plot MSE and RMSE 
@@ -61,7 +55,7 @@ plot(RMSEP(pcr.fit),legendpos = "topright")
 
 # We compute the test MSE as follows:
 pcr.pred=predict(pcr.fit,x[test,], ncomp=minPCR)
-mean((pcr.pred-y.test)^2) # --> 1.131456
+mean((pcr.pred-y.test)^2) # --> 1.096727
 # This test set MSE is competitive with the results obtained using ridge and the lasso
 
 # Finally, we fit PCR on the full data set, using M = 12
@@ -70,52 +64,47 @@ summary(pcr.fit)
 dev.new()
 validationplot(pcr.fit,val.type="MSEP",legendpos = "topright")
 dev.new()
-plot(pcr.fit, ncomp = 10, asp = 1, line = TRUE)
+plot(pcr.fit, ncomp = 11, asp = 1, line = TRUE)
 coef(pcr.fit) ## get the coefficients
 dev.new()
 
 # Plot of the y values of dataset and those predicted by the model
 # Good interpretation of the data when the line approaches the points as much as possible
-plot(pcr.fit, ncomp = 10, asp = 1, line = TRUE)
+plot(pcr.fit, ncomp = 11, asp = 1, line = TRUE)
 
 
 ######################
 ######### PLS ########
-set.seed (4)
+set.seed (1)
 
 # Using the plsr() function:
 # Pls is similar to pcr, but is used to manage the variance of y 
 # With pls, we don't concentrate our attention only on the regressions, but also the y variable
 # Setting scale=TRUE has the effect of standardizing each predictor (scale projection).
 # Setting validation = 'CV' has the effect to use cross validation to rate M parameter
-pls.fit=plsr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-             +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-             +I(cabin_service^2)+I(value_for_money^2),data = merComplete, scale=TRUE, 
+pls.fit=plsr(fit.poly2,data = merComplete, scale=TRUE, 
              validation ="CV")
 summary(pls.fit)
+dev.new()
 validationplot(pls.fit,val.type="MSEP")
-which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 10
+which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 11
 
 # Now perform Pls on the training data and evaluate its test set performance:
-set.seed (4)
-pls.fit=plsr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-             +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-             +I(cabin_service^2)+I(value_for_money^2),data = merComplete, subset=train, 
+set.seed (1)
+pls.fit=plsr(fit.poly2,data = merComplete, subset=train, 
              scale=TRUE, validation ="CV")
 
 validationplot(pls.fit,val.type="MSEP"); 
-which.min(MSEP(pls.fit)$val[1,,][-1]); # M = 10
+which.min(MSEP(pls.fit)$val[1,,][-1]); # M = 11
 pls.pred=predict(pls.fit,x[test,],ncomp=11)
-mean((pls.pred-y.test)^2) # --> 1.131404
+mean((pls.pred-y.test)^2) # --> 1.096727
 pls.pred=predict(pls.fit,x[test,],ncomp=10)
-mean((pls.pred-y.test)^2) # --> 1.131393
+mean((pls.pred-y.test)^2) # --> 1.09679
 pls.pred=predict(pls.fit,x[test,],ncomp=9)
-mean((pls.pred-y.test)^2) # --> 1.132129
+mean((pls.pred-y.test)^2) # --> 1.096815
 # The test MSE is comparable to (slightly higher) the test MSE obtained using ridge regression, the lasso, and PCR.
 
 # Finally, we perform PLS using the full data set, using M = 11, 
-pls.fit=plsr(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-             +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-             +I(cabin_service^2)+I(value_for_money^2),data = merComplete ,scale=TRUE,ncomp=11)
+pls.fit=plsr(fit.poly2,data = merComplete ,scale=TRUE,ncomp=11)
 summary(pls.fit)
-#Final result: with 8 components we can explain the same variance of y obtained with 11 components
+#Final result: with 10 components we can explain the same variance of y obtained with 11 components

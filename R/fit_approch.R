@@ -4,8 +4,7 @@ library(leaps)
 # The regsubsets() function (part of the leaps library) performs best subset selection 
 # by identifying the best model that contains a given number of predictors, 
 
-regfit.full=regsubsets(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                       +wifi_connectivity+value_for_money,merComplete)
+regfit.full=regsubsets(fit.linear,merComplete)
 reg.summary=summary(regfit.full)
 
 reg.summary$rsq # R2 statistic increases monotonically as more variables are included.
@@ -52,20 +51,17 @@ coef(regfit.full ,which.min(reg.summary$bic)) #see the coefficient estimates for
 # Using the argument method="forward" or method="backward".
 
 ## Forward
-regfit.fwd=regsubsets(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                      +wifi_connectivity+value_for_money,data=merComplete, nvmax=8, method ="forward")
+regfit.fwd=regsubsets(fit.linear,data=merComplete, nvmax=8, method ="forward")
 summary(regfit.fwd)
 # We see that using forward stepwise selection, the best one-variable is recommended.
 
 ## Backward
-regfit.bwd=regsubsets(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                      +wifi_connectivity+value_for_money,data=merComplete,nvmax=8, method ="backward")
+regfit.bwd=regsubsets(fit.linear,data=merComplete,nvmax=8, method ="backward")
 summary(regfit.bwd)
 
-# For this data, the best one-variable through six-variable models 
-# might be identical for best subset and forward selection.
+# The models found by best subset, forward and backward selection are equal.
 ii=7; summary(regfit.full)$outmat[ii,]==summary(regfit.fwd)$outmat[ii,]
-# However, they have different best seven-variable models. 
+
 coef(regfit.full,8)
 coef(regfit.fwd,8)
 coef(regfit.bwd,8)
@@ -87,17 +83,13 @@ test=(!train)
 sum(test) # --> 39800
 
 # Apply best subset selection to the training set
-regfit.best=regsubsets(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
-                       +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-                       +poly(wifi_connectivity,3)+poly(value_for_money,3),data=merComplete[train,], nvmax =22)
+regfit.best=regsubsets(fit.poly3,data=merComplete[train,], nvmax =22)
 
 # Make a model matrix from the test data.
 # The model.matrix() function is used in many regression packages for 
 # building an "X" matrix from data.
 # Using a error matrix to calculate the test error
-test.mat=model.matrix(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
-                      +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-                      +poly(wifi_connectivity,3)+poly(value_for_money,3),data=merComplete[test,])
+test.mat=model.matrix(fit.poly3,data=merComplete[test,])
 
 # Now we run a loop, and for each size i, we extract the coefficients 
 # from regfit.best for the best model of that size, 
@@ -131,18 +123,18 @@ predict.regsubsets = function(object,newdata,id,...){ # ... <-> ellipsis
 # results.
 k=8
 set.seed(2018)
-folds = sample(1:k,nrow(merComplete),replace=TRUE) # Each row of the dataset is associated with a group (from 1 to 8)
-cv.errors = matrix(NA,k,11, dimnames=list(NULL, paste(1:11)))
+folds <- sample(1:k,nrow(merComplete),replace=TRUE) # Each row of the dataset is associated with a group (from 1 to 8)
+cv.errors <- matrix(NA,k,11, dimnames=list(NULL, paste(1:11)))
 
 # write a for loop that performs cross-validation
 for(j in 1:k){
   # folds != j si prende tutti i gruppi per il train e lascia un gruppo per il test
-  best.fit=regsubsets(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-                      +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                      +I(cabin_service^2)+I(value_for_money^2), data=merComplete[folds!=j,], nvmax=11)
+  best.fit <- regsubsets(overall~recommended+ground_service+seat_comfort+wifi_connectivity
+                         +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
+                         +I(cabin_service^2)+I(value_for_money^2), data=merComplete[folds!=j,], nvmax=11)
   for(i in 1:11){
-    pred = predict(best.fit, merComplete[folds==j,], id=i)
-    cv.errors[j,i] = mean((merComplete$overall[folds==j]-pred)^2)
+    pred <- predict(best.fit, merComplete[folds==j,], id=i)
+    cv.errors[j,i] <- mean((merComplete$overall[folds==j]-pred)^2)
   }
 }
 

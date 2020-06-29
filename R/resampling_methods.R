@@ -12,34 +12,27 @@ n = nrow(merComplete)
 
 ######### Validation Set Approch #########
 
-set.seed(110)
+set.seed(1)
 train=sample(1:n,n/2) ###
-lm.fit=lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-          +wifi_connectivity+value_for_money, data = merComplete, subset = train)
+lm.fit=lm(fit.linear, data = merComplete, subset = train)
 
 # the estimated test MSE for the linear regression fit is 1.111269 (seed=1)
 mean(((overall-predict(lm.fit,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-2 transformation.
-lm.fit2=lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-           +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-           +I(cabin_service^2)+I(value_for_money^2),data = merComplete, subset=train)
+lm.fit2=lm(fit.poly2, data = merComplete, subset=train)
 
 # the estimated test MSE for the linear regression fit is 1.111269 (seed=1)
 mean(((overall-predict(lm.fit2,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-3 transformation.
-lm.fit3=lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
-           +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-           +poly(wifi_connectivity,3)+poly(value_for_money,3), data = merComplete, subset=train) 
+lm.fit3=lm(fit.poly3, data = merComplete, subset=train) 
 
 # the estimated test MSE for the linear regression fit is 1.096712 (seed=1)
 mean(((overall-predict(lm.fit3,merComplete))[-train])^2)
 
 # use the poly() function to estimate the test error for the polynomials-3 transformation.
-lm.fit4=lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
-           +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
-           +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete, subset=train) 
+lm.fit4=lm(fit.poly4, data = merComplete, subset=train) 
 
 # the estimated test MSE for the linear regression fit is 1.093318 (seed=1)
 mean(((overall-predict(lm.fit4,merComplete))[-train])^2)
@@ -50,11 +43,10 @@ mean(((overall-predict(lm.fit4,merComplete))[-train])^2)
 ########## K-Fold Cross Validation ##########
 library(boot)
 
-glm.fit=glm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-            +wifi_connectivity+value_for_money ,data=merComplete)
+glm.fit=glm(fit.poly4 ,data=merComplete)
 
 cv.err=cv.glm(merComplete,glm.fit, K = 8)
-cv.err$delta # The K-Fold Cross validation estimate for the test error is approximately 1.120650 (seed=110).
+cv.err$delta # The K-Fold Cross validation estimate for the test error is approximately 1.102361 (seed=1).
 
 # K-Fold Cross validation for polynomial regressions with orders i=1,2,...,4.
 
@@ -77,22 +69,21 @@ cv.error
 library(stringr)
 
 # No-transformation
-set.seed (10)
+set.seed (2)
 boot.fn=function(data,index){
-  return(coef(lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                 +wifi_connectivity+value_for_money, data = data,subset=index)))
+  temp <- index
+  return(coef(lm(fit.linear, data = data,subset=temp)))
 }
 boot.fn(merComplete, 1:n)
 
-
+# Boot estimate is not deterministic
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
-
+boot.fn(merComplete,sample(1:n, 79576,replace=T))
 # We use the boot() function to compute the standard errors 
 # of 1,000 bootstrap estimates for the intercept and slope terms.
 b = boot(merComplete ,boot.fn ,1000)
 
-s = summary(lm(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-   +wifi_connectivity+value_for_money, data = merComplete))
+s = summary(lm(fit.linear, data = merComplete))
 
 # Take all std. errors of the bootstrap estimate 
 x <- capture.output(b)
@@ -108,12 +99,11 @@ cat("\nDifference between no-Transformation Std.errors:\n",c - se,"\n")
 
 
 # Polinomials-2 no-linear transformation
-set.seed (11)
+set.seed (2)
 
 boot.fn=function(data,index){
-  return(coef(lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-                 +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                 +I(cabin_service^2)+I(value_for_money^2),data = data,subset=index)))
+  temp <- index
+  return(coef(lm(fit.poly2,data = data,subset=temp)))
 }
 boot.fn(merComplete, 1:n)
 
@@ -124,9 +114,7 @@ boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 b = boot(merComplete ,boot.fn ,1000)
 
-s = summary(lm(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-               +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-               +I(cabin_service^2)+I(value_for_money^2),data = merComplete))
+s = summary(lm(fit.poly2,data = merComplete))
 
 # Take all std. errors of the bootstrap estimate 
 x <- capture.output(b)
@@ -141,24 +129,20 @@ c = as.numeric(c)
 cat("\nDifference between poly-2 transformation Std.errors:\n",c - se,"\n")
 
 # Polinomials-3 no-linear transformation
-set.seed (12)
+set.seed (2)
 
 boot.fn=function(data,index){
-  return(coef(lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
-                 +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-                 +poly(wifi_connectivity,3)+poly(value_for_money,3), data = data, subset=index)))
+  temp <- index
+  return(coef(lm(fit.poly3, data = data, subset=temp)))
 }
 
 boot.fn(merComplete, 1:n)
-
 
 boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 b = boot(merComplete ,boot.fn ,1000)
 
-s = summary(lm(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
-           +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
-           +poly(wifi_connectivity,3)+poly(value_for_money,3), data = merComplete))
+s = summary(lm(fit.poly3, data = merComplete))
 
 # Take all std. errors of the bootstrap estimate 
 x <- capture.output(b)
@@ -173,12 +157,10 @@ c = as.numeric(c)
 cat("\nDifference between poly-3 transformation Std.errors:\n",c - se,"\n")
 
 # Polinomials-4 no-linear transformation
-set.seed (13)
+set.seed (2)
 
 boot.fn=function(data,index){
-  return(coef(lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
-                 +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
-                 +poly(wifi_connectivity,4)+poly(value_for_money,4), data = data,subset=index)))
+  return(coef(lm(fit.poly4, data = data,subset=index)))
 }
 
 boot.fn(merComplete, 1:n)
@@ -188,9 +170,7 @@ boot.fn(merComplete,sample(1:n, 79576,replace=T))
 
 boot(merComplete ,boot.fn ,1000)
 
-summary(lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
-           +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
-           +poly(wifi_connectivity,4)+poly(value_for_money,4), data = merComplete))
+summary(lm(fit.poly4, data = merComplete))
 
 # Take all std. errors of the bootstrap estimate 
 x <- capture.output(b)
@@ -231,5 +211,12 @@ xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~I(seat_comfort^3),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
 matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
+## Plot linear model with polinomials-4 transformation
+dev.new()
+plot(as.factor(seat_comfort),overall)
+#abline(lm(overall~I(seat_comfort^2), data = merComplete),col="blue")
+xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
+ci_lin <- predict(lm(overall~I(seat_comfort^4),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
+matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
 

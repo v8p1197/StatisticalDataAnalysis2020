@@ -3,8 +3,7 @@
 
 library(glmnet)
 attach(merComplete)
-x = model.matrix(overall~recommended+seat_comfort+cabin_service+food_bev+entertainment+ground_service
-                 +wifi_connectivity+value_for_money, merComplete)[,-1] #[-1] means no intercept
+x = model.matrix(fit.linear, merComplete)[,-1] #[-1] means no intercept
 
 y = merComplete$overall
  
@@ -41,7 +40,7 @@ sqrt(sum(coef(ridge.mod)[-1,60]^2)) # l2 norm for lambda[60] > l2 for lambda[50]
 predict(ridge.mod,s=50,type="coefficients")[1:9,] # s = lambda value, predict of the coefficients
 
 # Validation approach to estimate test error
-set.seed(2017)
+set.seed(1)
 train=sample(1:nrow(x), nrow(x)/2) # another typical approach to sample
 test=(-train)
 y.test=y[test]
@@ -75,7 +74,7 @@ predict(ridge.mod,s=0,exact=T,type="coefficients",x=x[train,],y=y[train])[1:9,]
 
 
 #Instead of arbitrary values, we now use method "Cross validation" to estimate lambda:
-set.seed (2016)
+set.seed (1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=0)
 dev.new()
 
