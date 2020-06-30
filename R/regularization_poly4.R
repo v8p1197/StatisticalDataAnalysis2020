@@ -49,22 +49,20 @@ y.test=y[test]
 ridge.mod=glmnet(x[train,],y[train],alpha=0,lambda=grid,thresh=1e-12)
 ridge.pred=predict(ridge.mod,s=4,newx=x[test,]) # Note the use of the predict() function for a test set
 
-mean((ridge.pred-y.test)^2) # test MSE = 1.65811
+mean((ridge.pred-y.test)^2) # test MSE = 1.614116
 
 # test MSE, è mse di test con un modello che usa il valore medio delle y del training set, praticamente il modello con la
 # la sola intercetta, cioè tutti gli altri coefficienti = 0. Capire la capacità predittiva di un modello banale, 
 # infatti il mse test è motlo più grande rispetto a quello calcolato precedentemente.
 
-mean((mean(y[train ])-y.test)^2) # DA RIVEDERE ? mse = 11.8642
-
 # Two predictions with different (arbitrary) values of lambda: 
 # lambda --> +OO (10^10) means coefficients close to zero
 ridge.pred=predict(ridge.mod,s=1e10,newx=x[test,])
-mean((ridge.pred-y.test)^2) # like intercept only
+mean((ridge.pred-y.test)^2) # 11.85287 like intercept only
 
 # lambda --> 0 means that Least squares is simply ridge regression.
 ridge.pred=predict(ridge.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
-mean((ridge.pred-y.test)^2)
+mean((ridge.pred-y.test)^2) # 1.093318
 # Same result obtained with lm(), exact = T works again on the model (but not the known model)
 
 # Comparation of the results between lm() and glmnet when lambda=0:
@@ -88,7 +86,7 @@ log(bestlam) # log value of previous lambda
 
 # Prediction of the model with the best value of lambda
 ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
-mean((ridge.pred-y.test)^2) # MSE = 1.153201
+mean((ridge.pred-y.test)^2) # MSE = 1.111561
 
 # Prediction of the coefficients with the best value of lambda
 out=glmnet(x,y,alpha=0)
@@ -118,14 +116,13 @@ cv.out=cv.glmnet(x[train,],y[train],alpha=1)
 dev.new()
 plot(cv.out)
 bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda
-print(cv.out$lambda.1se) ## ?
 
 lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
-mean((lasso.pred-y.test)^2) # slighly larger than ridge
+mean((lasso.pred-y.test)^2) # 1.095203 slighly larger than ridge
 
 # Comparation between lm() and lasso-model with lambda = 0
 lasso.pred=predict(lasso.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
-mean((lasso.pred-y.test)^2)
+mean((lasso.pred-y.test)^2) # 1.093314
 
 # However, the lasso has a substantial advantage:
 # 1 of the 8 coefficient estimates is exactly zero: wifi_connectivity

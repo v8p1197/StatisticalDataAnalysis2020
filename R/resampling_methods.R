@@ -189,7 +189,7 @@ cat("\nDifference between poly-4 transformation Std.errors:\n",c - se,"\n")
 
 ## Plot linear model
 dev.new()
-plot(as.factor(seat_comfort),overall)
+plot(as.factor(seat_comfort),overall,main='Linear Model', xlab="seat comfort", ylab="overall")
 #abline(lm(overall~seat_comfort, data = merComplete),col="blue")
 xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~seat_comfort,data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
@@ -197,7 +197,7 @@ matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
 ## Plot linear model with polinomials-2 transformation
 dev.new()
-plot(as.factor(seat_comfort),overall)
+plot(as.factor(seat_comfort),overall,main='Polinomial-2 Model', xlab="seat comfort", ylab="overall")
 #abline(lm(overall~I(seat_comfort^2), data = merComplete),col="blue")
 xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~I(seat_comfort^2),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
@@ -205,7 +205,7 @@ matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
 ## Plot linear model with polinomials-3 transformation
 dev.new()
-plot(as.factor(seat_comfort),overall)
+plot(as.factor(seat_comfort),overall,main='Polinomial-3 Model', xlab="seat comfort", ylab="overall")
 #abline(lm(overall~I(seat_comfort^2), data = merComplete),col="blue")
 xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~I(seat_comfort^3),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")
@@ -213,7 +213,7 @@ matplot(xx,ci_lin$fit[,1],lty=1, ltw=2, col="red", type="l", add=T)
 
 ## Plot linear model with polinomials-4 transformation
 dev.new()
-plot(as.factor(seat_comfort),overall)
+plot(as.factor(seat_comfort),overall,main='Polinomial-4 Model', xlab="seat comfort", ylab="overall")
 #abline(lm(overall~I(seat_comfort^2), data = merComplete),col="blue")
 xx=seq(min(seat_comfort),max(seat_comfort),along.with = seat_comfort)
 ci_lin <- predict(lm(overall~I(seat_comfort^4),data=merComplete),newdata=data.frame(seat_comfort=xx),se.fit = T,interval = "confidence")

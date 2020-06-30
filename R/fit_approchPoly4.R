@@ -1,6 +1,6 @@
 #### Best subset selection and step forward and backward methods ####
 library(leaps)
-
+attach(merComplete)
 # The regsubsets() function (part of the leaps library) performs best subset selection 
 # by identifying the best model that contains a given number of predictors, 
 
@@ -10,8 +10,8 @@ reg.summary=summary(regfit.full)
 reg.summary$rsq # R2 statistic increases monotonically as more variables are included.
 which.min(reg.summary$rss) # identify the location of the minimum in the model with 29 predictors
 which.max(reg.summary$adjr2) # Adjusted R2 is max in the model with 25 predictors
+which.min(reg.summary$bic) # BIC is min in the model with 20 predictors
 
-# The best results is the model with 9 predictors
 cat("\nLocation of RSS min:",which.min(reg.summary$rss),"\n")
 cat("Location of adj-RSq max:",which.max(reg.summary$adjr2),"\n ")
 cat("Location of Cp min:",which.min(reg.summary$cp),"\n ")
@@ -44,7 +44,7 @@ plot(regfit.full,scale="bic") # best model with smaller "bic"
 # The BIC is a variant of the ACI with higher penalty terms. (It is closely related to the ACI)
 
 
-coef(regfit.full ,which.min(reg.summary$bic)) #see the coefficient estimates for the 9-variable model
+coef(regfit.full ,which.min(reg.summary$bic)) #see the coefficient estimates for the 21-variable model
 
 
 ####### Forward and Backward Stepwise Selection #######
@@ -75,6 +75,7 @@ regfit.bwd.summary = summary(regfit.bwd)
 regfit.bwd.summary$rsq # R2 statistic increases monotonically as more variables are included.
 which.min(regfit.bwd.summary$rss) # identify the location of the minimum in the model with 29 predictors
 which.max(regfit.bwd.summary$adjr2) # Adjusted R2 is max in the model with 25 predictors
+which.min(regfit.bwd.summary$bic) # BIC is min in the model with 20 predictors.
 
 dev.new()
 plot(regfit.bwd,scale="r2")
@@ -178,11 +179,28 @@ fit.poly4.incomplete <- lm(overall~recommended+poly(seat_comfort,4)+poly(cabin_s
                            +poly(food_bev,4)+entertainment+poly(ground_service,4)
                           + wifi_connectivity+poly(value_for_money,4), data=merComplete)
 
+# Model with max adjusted R2 (25 predictors)
 fit.poly4.best <- lm(overall~recommended+poly(seat_comfort,2)+I(seat_comfort^4)+poly(cabin_service,4)
                            +poly(food_bev,2)+I(food_bev^4)+poly(entertainment,4)+poly(ground_service,4)
                            + poly(wifi_connectivity,3)+poly(value_for_money,3), data=merComplete)
 
+
+# Model with min BIC. This is a model with 20 predictors and we no have substantial differences
+fit.poly4.20.predictors <- lm(overall~recommended+poly(seat_comfort,2)+I(seat_comfort^4)
+                         +poly(cabin_service,4)+poly(food_bev,2)+entertainment+poly(ground_service,4)
+                         +poly(wifi_connectivity,2)+ poly(value_for_money,3),data = merComplete)
+
+
 anova(fit.poly4.incomplete,fit.poly4.best)
 
+# fit 4 is the polinomial-4 model with all predictors
 anova(fit4,fit.poly4.best)
 
+
+summary(fit4)
+
+anova(fit.poly4.best,fit.poly4.20.predictors)
+anova(fit.poly4.20.predictors,fit4)
+
+# As we can see, between the model with all predictors and the one with 20 predictors there are no 
+# substantial differences, so the model with less predictors is preferred

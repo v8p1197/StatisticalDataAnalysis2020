@@ -8,16 +8,16 @@ dev.new()
 # Check Trend between overall and regressors
 
 par(mfrow=c(3,2))
-plot(seat_comfort, overall); plot(as.factor(seat_comfort), overall)
-plot(cabin_service, overall); plot(as.factor(cabin_service), overall)
-plot(food_bev, overall); plot(as.factor(food_bev), overall)
+plot(seat_comfort, overall, main="overall-regressors trend"); plot(as.factor(seat_comfort), overall,main="overall-regressors trend",xlab="seat comfort", ylab="overall")
+plot(cabin_service, overall); plot(as.factor(cabin_service), overall, xlab="cabin service", ylab="overall")
+plot(food_bev, overall); plot(as.factor(food_bev), overall, xlab="food bev", ylab="overall")
 
 dev.new()
 par(mfrow=c(4,2))
-plot(entertainment, overall); plot(as.factor(entertainment), overall)
-plot(ground_service, overall); plot(as.factor(ground_service), overall)
-plot(wifi_connectivity, overall); plot(as.factor(wifi_connectivity), overall)
-plot(value_for_money, overall); plot(as.factor(value_for_money), overall)
+plot(entertainment, overall,main="overall-regressors trend"); plot(as.factor(entertainment), overall,main="overall-regressors trend", xlab="entertainment", ylab="overall")
+plot(ground_service, overall); plot(as.factor(ground_service), overall, xlab="groud service", ylab="overall")
+plot(wifi_connectivity, overall); plot(as.factor(wifi_connectivity), overall, xlab="wifi connectivity", ylab="overall")
+plot(value_for_money, overall); plot(as.factor(value_for_money), overall, xlab="value for money", ylab="overall")
 # The trend is not linear between overall and regressors
 
 # Linear model with overall response and others parameters are regressors

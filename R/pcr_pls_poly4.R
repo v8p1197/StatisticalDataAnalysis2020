@@ -17,10 +17,9 @@ pcr.fit=pcr(fit.poly4,data = merComplete ,scale=TRUE, validation ="CV")
 
 # First line: variance explained as the number of regressors changes.
 # Second line: variance explained as a function of overall variance.
-# (Non tutta la varianza dei regressori mi serve per spiegare la varianza di y)
 
-# Variance:
-#   - explained: 100% when there are all regressors
+# Variance explained:
+#   - x: 100% when there are all regressors
 #   - overall: 90.71%
 
 summary(pcr.fit)
@@ -64,13 +63,10 @@ summary(pcr.fit)
 dev.new()
 validationplot(pcr.fit,val.type="MSEP",legendpos = "topright")
 dev.new()
+# Plot of the y values of dataset and those predicted by the model
 plot(pcr.fit, ncomp = 29, asp = 1, line = TRUE)
 coef(pcr.fit) ## get the coefficients
 dev.new()
-
-# Plot of the y values of dataset and those predicted by the model
-# Good interpretation of the data when the line approaches the points as much as possible
-plot(pcr.fit, ncomp = 29, asp = 1, line = TRUE)
 
 
 ######################
@@ -87,13 +83,14 @@ pls.fit=plsr(fit.poly4,data = merComplete, scale=TRUE,
 summary(pls.fit)
 dev.new()
 validationplot(pls.fit,val.type="MSEP")
-which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 29
+which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 10
 
 # Now perform Pls on the training data and evaluate its test set performance:
 set.seed (1)
 pls.fit=plsr(fit.poly4,data = merComplete, subset=train, 
              scale=TRUE, validation ="CV")
 
+dev.new()
 validationplot(pls.fit,val.type="MSEP"); 
 which.min(MSEP(pls.fit)$val[1,,][-1]); # M = 10
 pls.pred=predict(pls.fit,x[test,],ncomp=11)
@@ -104,7 +101,7 @@ pls.pred=predict(pls.fit,x[test,],ncomp=9)
 mean((pls.pred-y.test)^2) # --> 1.093249
 # The test MSE is comparable to (slightly higher) the test MSE obtained using ridge regression, the lasso, and PCR.
 
-# Finally, we perform PLS using the full data set, using M = 10 
-pls.fit=plsr(fit.poly4,data = merComplete ,scale=TRUE,ncomp=10)
+# Finally, we perform PLS using the full data set, using M = 29
+pls.fit=plsr(fit.poly4,data = merComplete ,scale=TRUE,ncomp=29)
 summary(pls.fit)
-#Final result: with 10 components we can explain the same variance of y obtained with 11 components
+#Final result: with 6 components we can explain the same variance of y obtained with 29 components

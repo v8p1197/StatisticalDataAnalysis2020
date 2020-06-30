@@ -8,8 +8,8 @@ regfit.full=regsubsets(fit.linear,merComplete)
 reg.summary=summary(regfit.full)
 
 reg.summary$rsq # R2 statistic increases monotonically as more variables are included.
-which.min(reg.summary$rss) # identify the location of the minimum (in the model with 8 predictors, 
-                           # infact R2 statistic is max in the model with 8 predictors)
+which.min(reg.summary$rss) # identify the location of the minimum in the model with 8 predictors. 
+which.max(reg.summary$adjr2) # infact Adjusted R2 statistic is max in the model with 8 predictors.
 
 # The best results is the model with 8 predictors
 cat("\nLocation of RSS min:",which.min(reg.summary$rss),"\n")
@@ -124,15 +124,15 @@ predict.regsubsets = function(object,newdata,id,...){ # ... <-> ellipsis
 k=8
 set.seed(2018)
 folds <- sample(1:k,nrow(merComplete),replace=TRUE) # Each row of the dataset is associated with a group (from 1 to 8)
-cv.errors <- matrix(NA,k,11, dimnames=list(NULL, paste(1:11)))
+cv.errors <- matrix(NA,k,22, dimnames=list(NULL, paste(1:22)))
 
 # write a for loop that performs cross-validation
 for(j in 1:k){
   # folds != j si prende tutti i gruppi per il train e lascia un gruppo per il test
-  best.fit <- regsubsets(overall~recommended+ground_service+seat_comfort+wifi_connectivity
-                         +value_for_money+I(entertainment^2)+I(seat_comfort^2)+I(food_bev^2)+I(ground_service^2)
-                         +I(cabin_service^2)+I(value_for_money^2), data=merComplete[folds!=j,], nvmax=11)
-  for(i in 1:11){
+  best.fit <- regsubsets(overall~recommended+poly(seat_comfort,3)+poly(cabin_service,3)
+                         +poly(food_bev,3)+poly(entertainment,3)+poly(ground_service,3)
+                         +poly(wifi_connectivity,3)+poly(value_for_money,3), data=merComplete[folds!=j,], nvmax=22)
+  for(i in 1:22){
     pred <- predict(best.fit, merComplete[folds==j,], id=i)
     cv.errors[j,i] <- mean((merComplete$overall[folds==j]-pred)^2)
   }
@@ -145,3 +145,4 @@ colMeans(cv.errors) # same results
 par(mfrow=c(1,1))
 dev.new()
 plot(mean.cv.errors, type="b") #it selects an 11-variable model
+

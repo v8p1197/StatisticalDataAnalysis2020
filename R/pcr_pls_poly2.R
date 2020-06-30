@@ -17,10 +17,9 @@ pcr.fit=pcr(fit.poly2.complete,data = merComplete ,scale=TRUE, validation ="CV")
 
 # First line: variance explained as the number of regressors changes.
 # Second line: variance explained as a function of overall variance.
-# (Non tutta la varianza dei regressori mi serve per spiegare la varianza di y)
 
-# Variance:
-#   - explained: 100% when there are all regressors
+# Variance explained:
+#   - x: 100% when there are all regressors
 #   - overall: 90.68%
 
 summary(pcr.fit)
@@ -65,6 +64,7 @@ summary(pcr.fit)
 dev.new()
 validationplot(pcr.fit,val.type="MSEP",legendpos = "topright")
 dev.new()
+# Plot of the y values of dataset and those predicted by the model
 plot(pcr.fit, ncomp = 15, asp = 1, line = TRUE)
 coef(pcr.fit) ## get the coefficients
 
