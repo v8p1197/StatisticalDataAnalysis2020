@@ -21,11 +21,12 @@ pcr.fit=pcr(fit.poly2.complete,data = merComplete ,scale=TRUE, validation ="CV")
 
 # Variance:
 #   - explained: 100% when there are all regressors
-#   - overall: 90.55%
+#   - overall: 90.68%
 
 summary(pcr.fit)
 # Note that pcr() reports the root mean squared error; 
-# It also provides the percentage of variance explained in the predictors and in the response using different numbers of components. 
+# It also provides the percentage of variance explained in the predictors and in 
+# the response using different numbers of components. 
 
 # Plot the cross-validation scores
 # Using val.type="MSEP" will cause the cross-validation MSE to be plotted.
@@ -49,13 +50,13 @@ pcr.fit=pcr(fit.poly2.complete,data = merComplete ,subset=train,scale=TRUE,
 dev.new()
 # Plot MSE and RMSE 
 validationplot(pcr.fit,val.type="MSEP",legendpos = "topright") 
-minPCR <- which.min(MSEP(pcr.fit)$val[1,,][-1]); minPCR # M=24 shows the lowest CV error
+minPCR <- which.min(MSEP(pcr.fit)$val[1,,][-1]); minPCR # M=15 shows the lowest CV error
 dev.new()
 plot(RMSEP(pcr.fit),legendpos = "topright")
 
 # We compute the test MSE as follows:
 pcr.pred=predict(pcr.fit,x[test,], ncomp=minPCR)
-mean((pcr.pred-y.test)^2) # --> 1.115632
+mean((pcr.pred-y.test)^2) # --> 1.095797
 # This test set MSE is competitive with the results obtained using ridge and the lasso
 
 # Finally, we fit PCR on the full data set, using M = 15
@@ -82,7 +83,7 @@ pls.fit=plsr(fit.poly2.complete,data = merComplete, scale=TRUE,
 summary(pls.fit)
 dev.new()
 validationplot(pls.fit,val.type="MSEP")
-which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 9
+which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 14
 
 # Now perform Pls on the training data and evaluate its test set performance:
 set.seed (1)
@@ -93,14 +94,14 @@ dev.new()
 validationplot(pls.fit,val.type="MSEP"); 
 which.min(MSEP(pls.fit)$val[1,,][-1]); # M = 9
 pls.pred=predict(pls.fit,x[test,],ncomp=10)
-mean((pls.pred-y.test)^2) # --> 1.11563
+mean((pls.pred-y.test)^2) # --> 1.095796
 pls.pred=predict(pls.fit,x[test,],ncomp=9)
-mean((pls.pred-y.test)^2) # --> 1.11563
+mean((pls.pred-y.test)^2) # --> 1.095787
 pls.pred=predict(pls.fit,x[test,],ncomp=8)
-mean((pls.pred-y.test)^2) # --> 1.115627
+mean((pls.pred-y.test)^2) # --> 1.095803
 # The test MSE is comparable to (slightly higher) the test MSE obtained using ridge regression, the lasso, and PCR.
 
 # Finally, we perform PLS using the full data set, using M = 15
 pls.fit=plsr(fit.poly2.complete,data = merComplete ,scale=TRUE,ncomp=15)
 summary(pls.fit)
-#Final result: with 7 components we can explain the same variance of y obtained with 15 components
+#Final result: with 5 components we can explain the same variance of y obtained with 15 components
