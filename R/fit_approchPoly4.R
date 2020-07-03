@@ -11,6 +11,7 @@ reg.summary$rsq # R2 statistic increases monotonically as more variables are inc
 which.min(reg.summary$rss) # identify the location of the minimum in the model with 29 predictors
 which.max(reg.summary$adjr2) # Adjusted R2 is max in the model with 25 predictors
 which.min(reg.summary$bic) # BIC is min in the model with 20 predictors
+which.min(reg.summary$cp) # Cp is min in the model with 25 predictors
 
 cat("\nLocation of RSS min:",which.min(reg.summary$rss),"\n")
 cat("Location of adj-RSq max:",which.max(reg.summary$adjr2),"\n ")
@@ -18,7 +19,6 @@ cat("Location of Cp min:",which.min(reg.summary$cp),"\n ")
 cat("Location of BIC min:",which.min(reg.summary$bic),"\n ")
 
 # Plot RSS, adjusted R2, Cp, and BIC for all of the models at once
-# As we seen in the plot, the best results is the model with 8 predictors
 dev.new()
 par(mfrow=c(2,2))
 plot(reg.summary$rss ,xlab="Number of Variables ",ylab="RSS",
@@ -100,7 +100,7 @@ round(coef(regfit.fwd,29),3)
 round(coef(regfit.bwd,29),3)
 
 
-## Choosing Among Models Using the Validation Set Approach and Cross-Validation 
+## Choosing Among Models Using the Validation Set Approach
 ####### Validation Set Approach ####
 set.seed (2019)
 
@@ -143,35 +143,6 @@ predict.regsubsets = function(object,newdata,id,...){ # ... <-> ellipsis
   xvars=names(coefi)
   mat[,xvars]%*%coefi
 }
-# We will demonstrate how we use this function while performing test MSE estimation by cross-validation.
-
-
-######### Cross-Validation Approach ######## 
-# Create a vector that allocates each observation to one of k = 8 folds and create a matrix to store the 
-# results.
-k=8
-set.seed(2018)
-folds = sample(1:k,nrow(merComplete),replace=TRUE) # Each row of the dataset is associated with a group (from 1 to 8)
-cv.errors = matrix(NA,k,29, dimnames=list(NULL, paste(1:29)))
-
-# write a for loop that performs cross-validation
-for(j in 1:k){
-  # folds != j si prende tutti i gruppi per il train e lascia un gruppo per il test
-  best.fit=regsubsets(overall~recommended+poly(seat_comfort,4)+poly(cabin_service,4)
-                      +poly(food_bev,4)+poly(entertainment,4)+poly(ground_service,4)
-                      +poly(wifi_connectivity,4)+poly(value_for_money,4), data=merComplete[folds!=j,], nvmax=29)
-  for(i in 1:29){
-    pred = predict(best.fit, merComplete[folds==j,], id=i)
-    cv.errors[j,i] = mean((merComplete$overall[folds==j]-pred)^2)
-  }
-}
-# This has given us a 8 x 8 matrix, of which the (i,j)th element corresponds to the test MSE for the i-th 
-# cross-validation fold for the best j-variable model.
-mean.cv.errors=apply(cv.errors, 2, mean); mean.cv.errors# Column average
-colMeans(cv.errors) # same results
-par(mfrow=c(1,1))
-dev.new()
-plot(mean.cv.errors, type="b") 
 
 # Compare between model incomplete and model returned by best subset selection
 

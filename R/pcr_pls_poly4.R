@@ -66,8 +66,6 @@ dev.new()
 # Plot of the y values of dataset and those predicted by the model
 plot(pcr.fit, ncomp = 29, asp = 1, line = TRUE)
 coef(pcr.fit) ## get the coefficients
-dev.new()
-
 
 ######################
 ######### PLS ########
@@ -83,7 +81,7 @@ pls.fit=plsr(fit.poly4,data = merComplete, scale=TRUE,
 summary(pls.fit)
 dev.new()
 validationplot(pls.fit,val.type="MSEP")
-which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 10
+which.min(MSEP(pls.fit)$val[1,,][-1]) # M = 12
 
 # Now perform Pls on the training data and evaluate its test set performance:
 set.seed (1)

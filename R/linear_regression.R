@@ -34,7 +34,7 @@ plot(fit)
 
 # The trend is not linear, so we fit polinomials-2 no-linear transformation.
               
-fit2 <- lm(fit.poly2 ,data = merComplete)
+fit2 <- lm(fit.poly2.complete ,data = merComplete)
 
 summary(fit2)
 confint(fit2)
@@ -75,5 +75,6 @@ anova(fit3,fit4)
 dev.new()
 par(mfrow=c(2,2))
 plot(fit4)
+
 
 # The best transformation is polinomials-4, non-linear transformation

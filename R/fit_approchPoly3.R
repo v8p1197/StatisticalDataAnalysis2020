@@ -4,12 +4,14 @@ library(leaps)
 # The regsubsets() function (part of the leaps library) performs best subset selection 
 # by identifying the best model that contains a given number of predictors, 
 
-regfit.full=regsubsets(fit.linear,merComplete)
+regfit.full=regsubsets(fit.poly3,merComplete, nvmax = 22)
 reg.summary=summary(regfit.full)
 
 reg.summary$rsq # R2 statistic increases monotonically as more variables are included.
-which.min(reg.summary$rss) # identify the location of the minimum in the model with 8 predictors. 
-which.max(reg.summary$adjr2) # infact Adjusted R2 statistic is max in the model with 8 predictors.
+which.min(reg.summary$rss) # identify the location of the minimum in the model with 22 predictors. 
+which.max(reg.summary$adjr2) # infact Adjusted R2 statistic is max in the model with 21 predictors.
+which.min(reg.summary$bic) # BIC is min in the model with 17 predictors
+which.min(reg.summary$cp) # Cp is min in the model with 20 predictors
 
 # The best results is the model with 8 predictors
 cat("\nLocation of RSS min:",which.min(reg.summary$rss),"\n")
@@ -18,7 +20,6 @@ cat("Location of Cp min:",which.min(reg.summary$cp),"\n ")
 cat("Location of BIC min:",which.min(reg.summary$bic),"\n ")
 
 # Plot RSS, adjusted R2, Cp, and BIC for all of the models at once
-# As we seen in the plot, the best results is the model with 8 predictors
 dev.new()
 par(mfrow=c(2,2))
 plot(reg.summary$rss ,xlab="Number of Variables ",ylab="RSS",
@@ -51,25 +52,25 @@ coef(regfit.full ,which.min(reg.summary$bic)) #see the coefficient estimates for
 # Using the argument method="forward" or method="backward".
 
 ## Forward
-regfit.fwd=regsubsets(fit.linear,data=merComplete, nvmax=8, method ="forward")
+regfit.fwd=regsubsets(fit.poly3,data=merComplete, nvmax=22, method ="forward")
 summary(regfit.fwd)
 # We see that using forward stepwise selection, the best one-variable is recommended.
 
 ## Backward
-regfit.bwd=regsubsets(fit.linear,data=merComplete,nvmax=8, method ="backward")
+regfit.bwd=regsubsets(fit.poly3,data=merComplete,nvmax=22, method ="backward")
 summary(regfit.bwd)
 
 # The models found by best subset, forward and backward selection are equal.
-ii=7; summary(regfit.full)$outmat[ii,]==summary(regfit.fwd)$outmat[ii,]
+ii=22; summary(regfit.full)$outmat[ii,]==summary(regfit.fwd)$outmat[ii,]
 
-coef(regfit.full,8)
-coef(regfit.fwd,8)
-coef(regfit.bwd,8)
+coef(regfit.full,22)
+coef(regfit.fwd,22)
+coef(regfit.bwd,22)
 
 # Same results with cleaner output 
-round(coef(regfit.full,8),3)
-round(coef(regfit.fwd,8),3)
-round(coef(regfit.bwd,8),3)
+round(coef(regfit.full,22),3)
+round(coef(regfit.fwd,22),3)
+round(coef(regfit.bwd,22),3)
 
 
 ## Choosing Among Models Using the Validation Set Approach
@@ -83,26 +84,26 @@ test=(!train)
 sum(test) # --> 39800
 
 # Apply best subset selection to the training set
-regfit.best=regsubsets(fit.linear,data=merComplete[train,], nvmax =8)
+regfit.best=regsubsets(fit.poly3,data=merComplete[train,], nvmax = 22)
 
 # Make a model matrix from the test data.
 # The model.matrix() function is used in many regression packages for 
 # building an "X" matrix from data.
 # Using a error matrix to calculate the test error
-test.mat=model.matrix(fit.linear,data=merComplete[test,])
+test.mat=model.matrix(fit.poly3,data=merComplete[test,])
 
 # Now we run a loop, and for each size i, we extract the coefficients 
 # from regfit.best for the best model of that size, 
 # multiply them into the appropriate columns of the test model matrix
 # to form the predictions, and compute the test MSE.
-# Compute the MSE test for best model from 1 to 8 regressors
-val.errors=rep(NA,8)
-for(i in 1:8){
+# Compute the MSE test for best model from 1 to 22 regressors
+val.errors=rep(NA,22)
+for(i in 1:22){
   coefi = coef(regfit.best,id=i)
   pred = test.mat[,names(coefi)]%*%coefi
   val.errors[i] = mean((merComplete$overall[test]-pred)^2)
 }
-# The best model is the one that contains which.min(val.errors) =  18 variable.
+# The best model is the one that contains which.min(val.errors) =  22 variables.
 val.errors; which.min(val.errors) 
 coef(regfit.best,which.min(val.errors)) # This is based on training data
 

@@ -3,12 +3,12 @@
 
 library(glmnet)
 attach(merComplete)
-x = model.matrix(fit.poly4, merComplete)[,-1] #[-1] means no intercept
+x = model.matrix(fit.poly3, merComplete)[,-1] #[-1] means no intercept
 
 y = merComplete$overall
 
 # The model.matrix() function is particularly useful for creating x; not only does it produce a matrix 
-# corresponding to the 29 predictors but it also automatically transforms any qualitative
+# corresponding to the 22 predictors but it also automatically transforms any qualitative
 # variables into dummy variables (recommended).
 # The latter property is important because glmnet() can only take numerical, quantitative inputs.
 
@@ -22,7 +22,7 @@ grid=10^seq(10,-2,length=100) # Lambda values grid (from 10^10 to 10^-2)
 ridge.mod=glmnet(x,y,alpha=0,lambda=grid) 
 
 
-dim(coef(ridge.mod)) # 30 coefficients, 100 lambda values
+dim(coef(ridge.mod)) # 23 coefficients, 100 lambda values
 
 # We expect the coefficient estimates to be much smaller, in terms of l2 norm, when a large value of lambda is used, as
 # compared to when a small value is used.
@@ -37,7 +37,7 @@ coef(ridge.mod)[,60] # corresponding coefficients
 sqrt(sum(coef(ridge.mod)[-1,60]^2)) # l2 norm for lambda[60] > l2 for lambda[50]
 # As lambda decreases -> the coefficients increase. As lambda increases -> the coefficients decrease
 
-predict(ridge.mod,s=50,type="coefficients")[1:30,] # s = lambda value, predict of the coefficients
+predict(ridge.mod,s=50,type="coefficients")[1:23,] # s = lambda value, predict of the coefficients
 
 # Validation approach to estimate test error
 set.seed(1)
@@ -49,7 +49,7 @@ y.test=y[test]
 ridge.mod=glmnet(x[train,],y[train],alpha=0,lambda=grid,thresh=1e-12)
 ridge.pred=predict(ridge.mod,s=4,newx=x[test,]) # Note the use of the predict() function for a test set
 
-mean((ridge.pred-y.test)^2) # test MSE = 1.614116
+mean((ridge.pred-y.test)^2) # test MSE = 1.615822
 
 # test MSE, è mse di test con un modello che usa il valore medio delle y del training set, praticamente il modello con la
 # la sola intercetta, cioè tutti gli altri coefficienti = 0. Capire la capacità predittiva di un modello banale, 
@@ -62,12 +62,12 @@ mean((ridge.pred-y.test)^2) # 11.85287 like intercept only
 
 # lambda --> 0 means that Least squares is simply ridge regression.
 ridge.pred=predict(ridge.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
-mean((ridge.pred-y.test)^2) # 1.093318
+mean((ridge.pred-y.test)^2) # 1.094223
 # Same result obtained with lm(), exact = T works again on the model (but not the known model)
 
 # Comparation of the results between lm() and glmnet when lambda=0:
 lm(y~x, subset=train)
-predict(ridge.mod,s=0,exact=T,type="coefficients",x=x[train,],y=y[train])[1:30,]
+predict(ridge.mod,s=0,exact=T,type="coefficients",x=x[train,],y=y[train])[1:23,]
 #In our case, best results are obtained with MSE compared to Ridge Regression
 
 
@@ -86,11 +86,11 @@ log(bestlam) # log value of previous lambda
 
 # Prediction of the model with the best value of lambda
 ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
-mean((ridge.pred-y.test)^2) # MSE = 1.111561
+mean((ridge.pred-y.test)^2) # MSE = 1.112249
 
 # Prediction of the coefficients with the best value of lambda
 out=glmnet(x,y,alpha=0)
-predict(out,type="coefficients",s=bestlam)[1:30,]
+predict(out,type="coefficients",s=bestlam)[1:23,]
 # As expected, none of the coefficients is zero
 
 # Figure that show the variation of the coefficients with different values of lambda
@@ -118,15 +118,15 @@ plot(cv.out)
 bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda
 
 lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
-mean((lasso.pred-y.test)^2) # 1.095203 slighly larger than ridge
+mean((lasso.pred-y.test)^2) # 1.096104 slighly larger than ridge
 
 # Comparation between lm() and lasso-model with lambda = 0
 lasso.pred=predict(lasso.mod,s=0,newx=x[test,],exact=T,x=x[train,],y=y[train])
-mean((lasso.pred-y.test)^2) # 1.093314
+mean((lasso.pred-y.test)^2) # 1.094215
 
 out=glmnet(x,y,alpha=1,lambda=grid)
-lasso.coef=predict(out,type="coefficients",s=bestlam)[1:30,]
+lasso.coef=predict(out,type="coefficients",s=bestlam)[1:23,]
 lasso.coef
 lasso.coef[lasso.coef!=0]
 cat("Number of coefficients equal to 0:",sum(lasso.coef==0),"\n")
-# 7 coefficients are equal to zero
+# 4 coefficients are equal to zero
