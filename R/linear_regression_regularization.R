@@ -74,8 +74,8 @@ dev.new()
 
 plot(cv.out)
 bestlam=cv.out$lambda.min
-bestlam # the best lambda 
-log(bestlam) # log value of previous lambda 
+bestlam # the best lambda is 0.3087768
+log(bestlam) # log value of previous lambda is -1.175137
 
 # Prediction of the model with the best value of lambda
 ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
@@ -108,8 +108,7 @@ set.seed (1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=1)
 dev.new()
 plot(cv.out)
-bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda
-print(cv.out$lambda.1se) ## ?
+bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda is 0.005032292
 
 lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
 mean((lasso.pred-y.test)^2) # 1.112508 slighly larger than ridge
