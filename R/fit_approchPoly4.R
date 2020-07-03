@@ -162,6 +162,8 @@ fit.poly4.20.predictors <- lm(overall~recommended+poly(seat_comfort,2)+I(seat_co
                          +poly(wifi_connectivity,2)+ poly(value_for_money,3),data = merComplete)
 
 
+
+
 anova(fit.poly4.incomplete,fit.poly4.best)
 
 # fit 4 is the polinomial-4 model with all predictors
