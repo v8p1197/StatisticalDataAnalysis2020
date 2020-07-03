@@ -1,4 +1,3 @@
-install.packages("RSQLite")
 library(RSQLite)
 
 conn <- dbConnect(SQLite(),'mycars.db')
