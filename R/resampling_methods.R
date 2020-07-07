@@ -51,7 +51,7 @@ library(boot)
 
 glm.fit=glm(fit.poly4 ,data=merComplete)
 
-cv.err=cv.glm(merComplete,glm.fit, K = 8)
+cv.err=cv.glm(merComplete,glm.fit, K = 10)
 cv.err$delta # The K-Fold Cross validation estimate for the test error is approximately 1.102361 (seed=1).
 
 # K-Fold Cross validation for polynomial regressions with orders i=1,2,...,4.
@@ -61,7 +61,7 @@ for (i in 1:4){
   glm.fit=glm(overall~recommended+poly(seat_comfort,i)+poly(cabin_service,i)
               +poly(food_bev,i)+poly(entertainment,i)+poly(ground_service,i)
               +poly(wifi_connectivity,i)+poly(value_for_money,i), data = merComplete)
-  cv.error[i]=cv.glm(merComplete,glm.fit, K=8)$delta[1]
+  cv.error[i]=cv.glm(merComplete,glm.fit, K=10)$delta[1]
 }
 cv.error
 # We still see little evidence that using cubic or higher-order polynomial terms leads to lower test error than simply
