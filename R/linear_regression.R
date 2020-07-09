@@ -1,5 +1,6 @@
 # Linear regression - multiple regressor, without regularization 
-
+library(tidyverse)
+library(caret)
 attach(merComplete)
 
 # Open a new windows
@@ -25,6 +26,7 @@ plot(value_for_money, overall); plot(as.factor(value_for_money), overall, xlab="
 fit <- lm(fit.linear, data = merComplete)
 
 summary(fit)
+car::vif(fit)
 
 # It shows confidence interval of variables
 confint(fit)
@@ -37,6 +39,8 @@ plot(fit)
 fit2 <- lm(fit.poly2.complete ,data = merComplete)
 
 summary(fit2)
+car::vif(fit2)
+
 confint(fit2)
 dev.new()
 par(mfrow=c(2,2))
@@ -50,6 +54,7 @@ fit3 <- lm(fit.poly3, data = merComplete)
 
 summary(fit3)
 confint(fit3)
+car::vif(fit3)
 dev.new()
 par(mfrow=c(2,2))
 plot(fit3)
@@ -61,6 +66,7 @@ fit5 <- lm(fit.log , data = merComplete)
 
 summary(fit5)
 confint(fit5)
+car::vif(fit5)
 dev.new()
 par(mfrow=c(2,2))
 plot(fit5)
@@ -71,6 +77,7 @@ anova(fit3,fit5)
 fit4 <- lm(fit.poly4, data = merComplete)
 
 summary(fit4)
+car::vif(fit4)
 anova(fit3,fit4)
 dev.new()
 par(mfrow=c(2,2))

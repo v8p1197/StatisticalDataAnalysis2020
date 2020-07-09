@@ -51,10 +51,6 @@ ridge.pred=predict(ridge.mod,s=4,newx=x[test,]) # Note the use of the predict() 
 
 mean((ridge.pred-y.test)^2) # test MSE = 1.62354
 
-# test MSE, è mse di test con un modello che usa il valore medio delle y del training set, praticamente il modello con la
-# la sola intercetta, cioè tutti gli altri coefficienti = 0. Capire la capacità predittiva di un modello banale, 
-# infatti il mse test è motlo più grande rispetto a quello calcolato precedentemente.
-
 # Two predictions with different (arbitrary) values of lambda: 
 # lambda --> +OO (10^10) means coefficients close to zero
 ridge.pred=predict(ridge.mod,s=1e10,newx=x[test,])
@@ -76,13 +72,10 @@ set.seed (1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=0)
 dev.new()
 
-# gradi di libertà = quali sono i coefficienti diversi da zero, le righe in verticale sono il range di valori che si puo 
-# scegliere per lambda senza cambiare la predittività del nostro modello
-
 plot(cv.out)
 bestlam=cv.out$lambda.min
-bestlam # the best lambda 
-log(bestlam) # log value of previous lambda 
+bestlam # the best lambda is 0.3087768
+log(bestlam) # log value of previous lambda is -1.175137
 
 # Prediction of the model with the best value of lambda
 ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
@@ -115,7 +108,7 @@ set.seed (1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=1)
 dev.new()
 plot(cv.out)
-bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda
+bestlam=cv.out$lambda.min; print(bestlam);print(log(bestlam)) # the best lambda is 0.005032292
 
 lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
 mean((lasso.pred-y.test)^2) # 1.097244 slighly larger than ridge
