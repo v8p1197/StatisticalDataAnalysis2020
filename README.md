@@ -11,6 +11,12 @@ Statistical Data Analysis project for Università degli Studi di Salerno. Academ
 
 ## Usage
 
+### Python
+
+To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook, download it and save a copy in your drive
+
+### R
+
 * To correctly use the script, run [packages.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/packages.R) and [models.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/models.R) first
 * [preprocessing.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/preprocessing.R) will merge the datasets into [preprocessed_complete.csv](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/Data/preprocessed_complete.csv)
   - There is no need to run it, you can just import the final dataset
