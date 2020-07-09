@@ -1,13 +1,5 @@
-library(readr)
-merComplete <- read_csv("Data/preprocessed_complete.csv")
-View(merComplete)
-merComplete$X1<-NULL
-
-# Delete prevoius code
 
 attach(merComplete)
-
-
 n = nrow(merComplete)
 
 ######### Validation Set Approch #########
