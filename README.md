@@ -9,11 +9,15 @@ Statistical Data Analysis project for Università degli Studi di Salerno. Academ
 * [Andrea Valitutto](https://github.com/andrewvali)
 * [Salvatore Ventre](https://github.com/salventre)
 
+## Documentation
+
+See the [documentation](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/ReportSDA2020.pdf) to understand the goals of the project.
+
 ## Usage
 
 ### Python
 
-To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook, download it and save a copy in your drive
+To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook, download it and save a copy in your drive.
 
 ### R
 
