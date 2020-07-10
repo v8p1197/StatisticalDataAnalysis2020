@@ -17,7 +17,9 @@ See the [documentation](https://github.com/v8p1197/StatisticalDataAnalysis2020/b
 
 ### Python
 
-To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook, download it and save a copy in your drive.
+To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook:
+* Download it and save a copy in your drive.
+* Install this extension and view it on GitHub
 
 ### R
 
@@ -34,7 +36,6 @@ To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalys
 * [regularization_poly2.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/regularization_poly2.R) applies Ridge and LASSO regularization to the polynomial model of degree 2
 * [regularization_poly3.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/regularization_poly3.R) applies Ridge and LASSO regularization to the polynomial model of degree 3
 * [regularization_poly4.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/regularization_poly4.R) applies Ridge and LASSO regularization to the polynomial model of degree 4
-
 * [pcr_pls_linear.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/pcr_pls_linear.R) applies PCR and PLS methods to the linear model
 * [pcr_pls_poly2.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/pcr_pls_poly2.R) applies PCR and PLS methods to the polynomial model of degree 2
 * [pcr_pls_poly3.R](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/R/pcr_pls_poly3.R) applies PCR and PLS methods to the polynomial model of degree 3
