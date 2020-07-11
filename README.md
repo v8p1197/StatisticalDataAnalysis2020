@@ -19,7 +19,8 @@ See the [documentation](https://github.com/v8p1197/StatisticalDataAnalysis2020/b
 
 To use the [ColabSDA2020.ipynb](https://github.com/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) Python colab notebook:
 * Download it and save a copy in your drive, or
-* Install [this extension](https://chrome.google.com/webstore/detail/open-in-colab/iogfkhleblhcpcekbiedikdehleodpjo) and view it on GitHub
+* Click [this link](https://colab.research.google.com/github/v8p1197/StatisticalDataAnalysis2020/blob/master/Python/ColabSDA2020.ipynb) to open it in Google Colab
+Please refer to the official [Google Colab documentation for GitHub](https://colab.research.google.com/github/googlecolab/colabtools/blob/master/notebooks/colab-github-demo.ipynb) for any problem or further information
 
 ### R
 
